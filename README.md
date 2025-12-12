@@ -1,32 +1,25 @@
-<h1>Movie RAG System</h1>
+# Movie RAG System
 
-<p><strong>Group members:</strong> Nishita Koya (vfj8ba), Yuhan Liu (yl7gk), Nicole Kwan (ypt2vj)</p>
+**Group members:** Nishita Koya (vfj8ba), Yuhan Liu (yl7gk), Nicole Kwan (ypt2vj)
 
-<hr>
+---
+## 1. Overview
+This project implements a Retrieval-Augmented Generation (RAG) system using:
+* A cleaned CSV dataset (`etl_cleaned_dataset.csv`)
+* A film box-office PDF:
+[The determinants of box office performance in the film industry revisited](https://www.researchgate.net/publication/281730174_The_determinants_of_box_office_performance_in_the_film_industry_revisited")
 
-<p>This project implements a Retrieval-Augmented Generation (RAG) system using:</p>
-<ul>
-  <li>A cleaned CSV dataset (<code>etl_cleaned_dataset.csv</code>)</li>
-  <li>A film box-office PDF:
-    <a href="https://www.researchgate.net/publication/281730174_The_determinants_of_box_office_performance_in_the_film_industry_revisited" target="_blank">
-      The determinants of box office performance in the film industry revisited
-    </a>
-  </li>
-</ul>
+The system performs:
+* Document ingestion and chunking
+* Embedding with `bge-small-en-v1.5`
+* FAISS vector search
+* Local LLM generation using `Phi-3-mini-4k-instruct`
+  * A Flask API endpoint at `/api/ask`
+  * A simple optional HTML user interface
 
-<p>The system performs:</p>
-<ul>
-  <li>Document ingestion and chunking</li>
-  <li>Embedding with <code>bge-small-en-v1.5</code></li>
-  <li>FAISS vector search</li>
-  <li>Local LLM generation using <code>Phi-3-mini-4k-instruct</code></li>
-  <li>A Flask API endpoint at <code>/api/ask</code></li>
-  <li>A simple optional HTML user interface</li>
-</ul>
+## 2. Folder Structure
 
-<h2>Folder Structure</h2>
-
-<pre>
+```bash
 ds-final-project-nyn/
 │
 ├── api/
@@ -44,7 +37,7 @@ ds-final-project-nyn/
 │   ├── etl_cleaned_dataset.csv
 │   └── additional_documents/
 │
-├── outputs/                       #all generated files stored here
+├── outputs/                       
 │   ├── ingested_documents.jsonl
 │   ├── embeddings.npy
 │   ├── faiss_index.bin
@@ -59,16 +52,14 @@ ds-final-project-nyn/
 │
 ├── README.md
 └── reflection.pdf
-</pre>
+```
 
-<h2> Before Running: Move Required Output Files</h2>
+### Before Running: Move Required Output Files
 
-<p>
 Because the RAG pipeline was originally developed in Google Colab, it uses a flat directory structure.
-To run the API successfully, please move all files inside <code>outputs/</code> into the project root, so the folder looks like:
-</p>
+To run the API successfully, please move all files inside `outputs` into the project root, so the folder looks like:
 
-<pre>
+```bash
 ds-final-project-nyn/
 │
 ├── app.py
@@ -83,66 +74,58 @@ ds-final-project-nyn/
 ├── ui/
 ├── api/
 └── ...
-</pre>
+```
 
-<p>No path changes are required. The system expects these artifacts to be in the project root.</p>
+No path changes are required. The system expects these artifacts to be in the project root.
 
-<hr>
+### How to Run
 
-<h2>How to Run (Under 2 Minutes)</h2>
+**Step 1** - Navigate to the API folder
+```bash
+cd api
+```
 
-<h3>1. Navigate to the API folder</h3>
-<pre><code>cd api
-</code></pre>
+**Step 2** - Install dependencies
 
-<h3>2. Install dependencies</h3>
+*Note: The serialized files (`texts.pkl`, `metadatas.pkl`, `faiss_index.bin`, etc.) were created using Python 3.12. These files may not load correctly under other Python versions.*
 
-<p><strong>Python Version Warning</strong><br>
-The serialized files (<code>texts.pkl</code>, <code>metadatas.pkl</code>, <code>faiss_index.bin</code>, etc.) were created using Python 3.12.
-These files may not load correctly under other Python versions.</p>
+Install using Python 3.12:
+```bash
+python3.12 -m pip install -r requirements.txt
+```
 
-<p>Install using Python 3.12:</p>
-<pre><code>python3.12 -m pip install -r requirements.txt
-</code></pre>
+**Step 3** - Start the server
 
-<h3>3. Start the server</h3>
+```bash
+python3.12 app.py
+```
 
-<pre><code>python3.12 app.py
-</code></pre>
+**Step 4** - The API will be available at:
+```bash
+http://127.0.0.1:8000
+```
 
-<p>The API will be available at:</p>
-<pre><code>http://127.0.0.1:8000
-</code></pre>
+## 3. API Usage
 
-<hr>
+### POST /api/ask
 
-<h2>API Usage</h2>
-
-<h3>POST /api/ask</h3>
-
-<p>Example CURL request:</p>
-
-<pre><code>curl -X POST http://127.0.0.1:8000/api/ask \
+Example CURL request:
+```bash
+curl -X POST http://127.0.0.1:8000/api/ask \
   -H "Content-Type: application/json" \
   -d '{"question": "Which movie has the highest IMDb rating?"}'
-</code></pre>
+```
 
-<p>Example JSON response:</p>
-
-<pre><code>{
+Example JSON response:
+```bash
   "answer": "Based on the context ...",
   "sources": [
     { "id": "file.pdf", "page": 7, "snippet": "..." },
     { "id": "etl_cleaned_dataset.csv", "snippet": "..." }
   ]
 }
-</code></pre>
+```
 
-<hr>
-
-<h2>Bonus UI</h2>
-
-<p>
-Open <code>ui/chat.html</code> in a browser to use a simple chat interface that sends queries to
-<code>/api/ask</code> and displays the answer and cited sources.
-</p>
+## 4. Bonus UI
+Open `ui/chat.html` in a browser to use a simple chat interface that sends queries to
+`/api/ask` and displays the answer and cited sources.
