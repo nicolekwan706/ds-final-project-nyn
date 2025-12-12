@@ -17,6 +17,7 @@ The system performs:
   * A Flask API endpoint at `/api/ask`
   * A simple optional HTML user interface
 
+---
 ## 2. Folder Structure
 
 ```bash
@@ -54,6 +55,7 @@ ds-final-project-nyn/
 └── reflection.pdf
 ```
 
+---
 ## 3. Before Running: Move Required Output Files
 
 Because the RAG pipeline was originally developed in Google Colab, it uses a flat directory structure.
@@ -78,6 +80,7 @@ ds-final-project-nyn/
 
 No path changes are required. The system expects these artifacts to be in the project root.
 
+---
 ## 4. How to Run
 
 **Step 1** - Navigate to the API folder
@@ -105,6 +108,7 @@ python3.12 app.py
 http://127.0.0.1:8000
 ```
 
+---
 ## 5. API Usage
 
 ### POST /api/ask
@@ -126,6 +130,7 @@ Example JSON response:
 }
 ```
 
+---
 ## 6. Bonus UI
 Open `ui/chat.html` in a browser to use a simple chat interface that sends queries to
 `/api/ask` and displays the answer and cited sources.
