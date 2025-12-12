@@ -1,12 +1,17 @@
 <h1>Movie RAG System</h1>
 
-Group members: Nishita Koya(vfj8ba), Yuhan Liu(yl7gk), Nicole Kwan(ypt2vj)
+<p><strong>Group members:</strong> Nishita Koya (vfj8ba), Yuhan Liu (yl7gk), Nicole Kwan (ypt2vj)</p>
 
----
+<hr>
+
 <p>This project implements a Retrieval-Augmented Generation (RAG) system using:</p>
 <ul>
   <li>A cleaned CSV dataset (<code>etl_cleaned_dataset.csv</code>)</li>
-  <li>A film box-office PDF (https://www.researchgate.net/publication/281730174_The_determinants_of_box_office_performance_in_the_film_industry_revisited) </li>
+  <li>A film box-office PDF:
+    <a href="https://www.researchgate.net/publication/281730174_The_determinants_of_box_office_performance_in_the_film_industry_revisited" target="_blank">
+      The determinants of box office performance in the film industry revisited
+    </a>
+  </li>
 </ul>
 
 <p>The system performs:</p>
@@ -39,42 +44,77 @@ ds-final-project-nyn/
 │   ├── etl_cleaned_dataset.csv
 │   └── additional_documents/
 │
+├── outputs/                       #all generated files stored here
+│   ├── ingested_documents.jsonl
+│   ├── embeddings.npy
+│   ├── faiss_index.bin
+│   ├── texts.pkl
+│   ├── metadatas.pkl
+│
 ├── ui/
 │   └── chat.html
+│
+├── notebooks/
+│   └── exploration.ipynb
 │
 ├── README.md
 └── reflection.pdf
 </pre>
 
+<h2> Before Running: Move Required Output Files</h2>
+
+<p>
+Because the RAG pipeline was originally developed in Google Colab, it uses a flat directory structure.
+To run the API successfully, please move all files inside <code>outputs/</code> into the project root, so the folder looks like:
+</p>
+
+<pre>
+ds-final-project-nyn/
+│
+├── app.py
+├── ingested_documents.jsonl
+├── embeddings.npy
+├── faiss_index.bin
+├── texts.pkl
+├── metadatas.pkl
+│
+├── rag_pipeline/
+├── data/
+├── ui/
+├── api/
+└── ...
+</pre>
+
+<p>No path changes are required — the system expects these artifacts to be in the project root.</p>
+
+<hr>
+
 <h2>How to Run (Under 2 Minutes)</h2>
 
 <h3>1. Navigate to the API folder</h3>
-<pre>
-cd api
-</pre>
+<pre><code>cd api
+</code></pre>
 
 <h3>2. Install dependencies</h3>
 
-<p><strong>Important:</strong> Several project artifacts (such as <code>texts.pkl</code>, <code>metadatas.pkl</code>, and the FAISS index) were generated using <strong>Python 3.12</strong>.  
-To ensure compatibility, install the requirements using Python 3.12:</p>
+<p><strong>Python Version Warning</strong><br>
+The serialized files (<code>texts.pkl</code>, <code>metadatas.pkl</code>, <code>faiss_index.bin</code>, etc.) were created using Python 3.12.
+These files may not load correctly under other Python versions.</p>
 
-<pre>
-python3.12 -m pip install -r requirements.txt
-</pre>
-
-<p><em>These serialized files are not guaranteed to load correctly under different Python versions.</em></p>
+<p>Install using Python 3.12:</p>
+<pre><code>python3.12 -m pip install -r requirements.txt
+</code></pre>
 
 <h3>3. Start the server</h3>
 
-<pre>
-python3.12 app.py
-</pre>
+<pre><code>python3.12 app.py
+</code></pre>
 
 <p>The API will be available at:</p>
-<pre>
-http://127.0.0.1:8000
-</pre>
+<pre><code>http://127.0.0.1:8000
+</code></pre>
 
+<hr>
 
 <h2>API Usage</h2>
 
@@ -82,25 +122,27 @@ http://127.0.0.1:8000
 
 <p>Example CURL request:</p>
 
-<pre>
-curl -X POST http://127.0.0.1:8000/api/ask \
+<pre><code>curl -X POST http://127.0.0.1:8000/api/ask \
   -H "Content-Type: application/json" \
   -d '{"question": "Which movie has the highest IMDb rating?"}'
-</pre>
+</code></pre>
 
 <p>Example JSON response:</p>
 
-<pre>
-{
+<pre><code>{
   "answer": "Based on the context ...",
   "sources": [
     { "id": "file.pdf", "page": 7, "snippet": "..." },
     { "id": "etl_cleaned_dataset.csv", "snippet": "..." }
   ]
 }
-</pre>
+</code></pre>
 
+<hr>
 
 <h2>Bonus UI</h2>
 
-<p>Open <code>ui/chat.html</code> in a browser to use a very simple chat interface that sends queries to <code>/api/ask</code>.</p>
+<p>
+Open <code>ui/chat.html</code> in a browser to use a simple chat interface that sends queries to
+<code>/api/ask</code> and displays the answer and cited sources.
+</p>
