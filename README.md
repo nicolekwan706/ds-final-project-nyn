@@ -85,7 +85,7 @@ ds-final-project-nyn/
 └── ...
 </pre>
 
-<p>No path changes are required — the system expects these artifacts to be in the project root.</p>
+<p>No path changes are required. The system expects these artifacts to be in the project root.</p>
 
 <hr>
 
