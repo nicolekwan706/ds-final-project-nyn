@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RAG Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #messages { 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            height: 300px; 
+            overflow-y: scroll; 
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+        }
+        .user { font-weight: bold; color: #0057a3; }
+        .bot { font-weight: bold; color: #008000; }
+        .source { color: #777; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<h2>Movie RAG Chat</h2>
+
+<div id="messages"></div>
+
+<input id="question" type="text" placeholder="Ask a question..." style="width: 80%;" />
+<button onclick="sendQuestion()">Send</button>
+
+<script>
+async function sendQuestion() {
+    const question = document.getElementById("question").value;
+    if (!question.trim()) return;
+
+    addMessage("You: " + question, "user");
+
+    let response;
+
+    try {
+        response = await fetch("http://127.0.0.1:8000/api/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question })
+        });
+    } catch (err) {
+        addMessage("Error: Could not reach server.", "bot");
+        return;
+    }
+
+    const data = await response.json();
+
+    addMessage("Assistant: " + data.answer, "bot");
+
+    if (data.sources && data.sources.length > 0) {
+        let srcBlock = "\nSources:\n";
+        for (const s of data.sources) {
+            srcBlock += `• ${s.id}`;
+            if (s.page !== null) srcBlock += ` (page ${s.page})`;
+            srcBlock += ` – ${s.snippet}\n`;
+        }
+        addMessage(srcBlock, "source");
+    }
+
+    document.getElementById("question").value = "";
+}
+
+function addMessage(text, cls) {
+    const div = document.getElementById("messages");
+    const p = document.createElement("p");
+    p.className = cls;
+    p.textContent = text;
+    div.appendChild(p);
+    div.scrollTop = div.scrollHeight;
+}
+</script>
+
+</body>
+</html>
